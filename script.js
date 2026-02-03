@@ -3,9 +3,11 @@
   - Vanilla JS
   - NO button has randomized troll effects
   - YES triggers celebration screen with fireworks canvas + falling hearts
+  - Optional music with fade-in + mute/unmute
 */
 
 (() => {
+  // ===== DOM =====
   const mainScreen = document.getElementById("mainScreen");
   const yesScreen = document.getElementById("yesScreen");
   const yesBtn = document.getElementById("yesBtn");
@@ -14,7 +16,8 @@
   const claimBtn = document.getElementById("claimBtn");
 
   const bgMusic = document.getElementById("bgMusic");
-  
+  const muteBtn = document.getElementById("muteBtn");
+
   const btnArea = document.getElementById("btnArea");
   const bubbleLayer = document.getElementById("bubbleLayer");
   const floatLayer = document.getElementById("floatLayer");
@@ -22,6 +25,13 @@
   const noCountEl = document.getElementById("noCount");
   const fxCanvas = document.getElementById("fxCanvas");
 
+  // If core elements are missing, don't crash
+  if (!mainScreen || !yesScreen || !yesBtn || !noBtn || !btnArea || !bubbleLayer || !floatLayer || !noCountEl || !fxCanvas) {
+    console.warn("Some required elements are missing in index.html. Script halted to prevent errors.");
+    return;
+  }
+
+  // ===== State =====
   let noAttempts = 0;
   let lastNoRect = null;
   let isCelebrating = false;
@@ -38,16 +48,9 @@
   }
 
   function setNoPositionWithinArea(xPx, yPx) {
-    // Position NO using absolute coords inside btnArea
-    // noBtn is absolutely positioned relative to btnArea
     const area = getAreaRect();
-    const nb = noBtn.getBoundingClientRect();
-
-    // Convert viewport coords to area-local coords
     const localX = xPx - area.left;
     const localY = yPx - area.top;
-
-    // Apply with left/top in px; keep transform translate(-50%, -50%) in CSS
     noBtn.style.left = `${localX}px`;
     noBtn.style.top = `${localY}px`;
   }
@@ -56,20 +59,16 @@
     const area = getAreaRect();
     const yesRect = getYesRect();
 
-    // Approx button dimensions (use rect after layout)
     const nbRect = noBtn.getBoundingClientRect();
     const bw = nbRect.width;
     const bh = nbRect.height;
 
-    // safe padding within area
     const pad = 16;
 
-    // We'll try a few attempts to avoid overlapping YES
     for (let i = 0; i < 12; i++) {
       const x = area.left + pad + (Math.random() * (area.width - pad * 2));
       const y = area.top + pad + (Math.random() * (area.height - pad * 2));
 
-      // proposed rect (centered)
       const proposed = {
         left: x - bw / 2,
         right: x + bw / 2,
@@ -77,17 +76,13 @@
         bottom: y + bh / 2
       };
 
-      // Ensure within area bounds
       if (
         proposed.left < area.left + pad ||
         proposed.right > area.right - pad ||
         proposed.top < area.top + pad ||
         proposed.bottom > area.bottom - pad
-      ) {
-        continue;
-      }
+      ) continue;
 
-      // Avoid overlapping YES button by a "buffer"
       const buffer = 18;
       const overlap =
         !(proposed.right + buffer < yesRect.left ||
@@ -98,7 +93,6 @@
       if (!overlap) return { x, y };
     }
 
-    // fallback: put it on right side-ish
     return {
       x: area.left + area.width * 0.75,
       y: area.top + area.height * 0.55
@@ -113,11 +107,9 @@
     bubble.className = "bubble";
     bubble.textContent = text;
 
-    // position bubble above the button center, within btnArea region
     const x = nb.left + nb.width / 2;
     const y = nb.top;
 
-    // local coords for bubble layer
     const localX = x - area.left;
     const localY = y - area.top;
 
@@ -150,9 +142,7 @@
     const labels = ["NO?", "really?", "don't do it", "NO pls", "u sure?"];
     const original = noBtn.textContent;
     noBtn.textContent = labels[Math.floor(Math.random() * labels.length)];
-    setTimeout(() => {
-      noBtn.textContent = original;
-    }, 900);
+    setTimeout(() => { noBtn.textContent = original; }, 900);
   }
 
   function tempFadeGray() {
@@ -176,7 +166,6 @@
   }
 
   function teleportTopThenBack() {
-    // Store current rect to return
     const area = getAreaRect();
     const current = noBtn.getBoundingClientRect();
     lastNoRect = { x: current.left + current.width / 2, y: current.top + current.height / 2 };
@@ -197,6 +186,16 @@
     setNoPositionWithinArea(pos.x, pos.y);
   }
 
+  function getPointer(evt) {
+    if (evt && evt.touches && evt.touches[0]) {
+      return { x: evt.touches[0].clientX, y: evt.touches[0].clientY };
+    }
+    return {
+      x: evt?.clientX ?? window.innerWidth / 2,
+      y: evt?.clientY ?? window.innerHeight / 2
+    };
+  }
+
   function slipAwayFromPointer(clientX, clientY) {
     const area = getAreaRect();
     const nb = noBtn.getBoundingClientRect();
@@ -204,7 +203,6 @@
     const cx = nb.left + nb.width / 2;
     const cy = nb.top + nb.height / 2;
 
-    // Vector away from pointer
     let dx = cx - clientX;
     let dy = cy - clientY;
 
@@ -237,71 +235,48 @@
     const cx = nb.left + nb.width / 2;
     const cy = nb.top + nb.height / 2;
 
-    const nx = clamp(cx + (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 60), area.left + 26, area.right - 26);
-    const ny = clamp(cy + (Math.random() > 0.5 ? 1 : -1) * (26 + Math.random() * 40), area.top + 26, area.bottom - 26);
+    const nx = clamp(
+      cx + (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 60),
+      area.left + 26,
+      area.right - 26
+    );
+    const ny = clamp(
+      cy + (Math.random() > 0.5 ? 1 : -1) * (26 + Math.random() * 40),
+      area.top + 26,
+      area.bottom - 26
+    );
 
     setNoPositionWithinArea(nx, ny);
   }
 
   const bubbleMessages = [
-    "Why choose NO 😭",
-    "Are you sure??",
-    "Come onnn 😤",
+    "Kenapa Pilih No, BJIR 😭",
+    "Are you sure? YTTA?",
+    "Trauma sama Master Data? 😤",
     "That hurts…",
-    "Timesheet trauma? 😵‍💫",
-    "WBS says: pick YES 😇",
+    "Parah sih 😵‍💫",
+    "Ga Cair ya? 😇",
     "SECE was kinda fun tho 👀",
   ];
 
   // ===== NO Troll Effects Pool (10+) =====
   const effects = [
-    // 1) random position
     () => moveRandomWithinViewportSafe(),
-
-    // 2) teleport to top briefly then back
     () => teleportTopThenBack(),
-
-    // 3) shrink
     () => tempShrink(),
-
-    // 4) fade gray
     () => tempFadeGray(),
-
-    // 5) wiggle button
     () => wiggleNo(),
-
-    // 6) screen shake
     () => screenShake(),
-
-    // 7) ghost emoji float
     () => spawnGhost(),
-
-    // 8) speech bubble
     () => showBubbleNearNo(bubbleMessages[Math.floor(Math.random() * bubbleMessages.length)]),
-
-    // 9) swap label temporarily
     () => tempSwapNoLabel(),
-
-    // 10) slip away from pointer
     (evt) => {
       const p = getPointer(evt);
       slipAwayFromPointer(p.x, p.y);
     },
-
-    // 11) "nudge away" mini-move
     () => nudgeAway(),
-
-    // 12) jump top edge then random
     () => jumpToTopEdge(),
   ];
-
-  function getPointer(evt) {
-    // support mouse / touch
-    if (evt && evt.touches && evt.touches[0]) {
-      return { x: evt.touches[0].clientX, y: evt.touches[0].clientY };
-    }
-    return { x: evt?.clientX ?? window.innerWidth / 2, y: evt?.clientY ?? window.innerHeight / 2 };
-  }
 
   function runRandomNoEffect(evt) {
     if (isCelebrating) return;
@@ -309,77 +284,126 @@
     noAttempts += 1;
     noCountEl.textContent = String(noAttempts);
 
-    // Always ensure NO stays clickable-ish (but trolling)
-    // Randomly choose an effect; some need the event pointer
-    const idx = Math.floor(Math.random() * effects.length);
-    const chosen = effects[idx];
-
-    // Slightly bias toward movement effects as attempts increase
     const biasMove = (noAttempts % 3 === 0);
     if (biasMove && Math.random() < 0.65) {
-      // pick one of movement effects
       const movers = [0, 1, 9, 10, 11];
       const mi = movers[Math.floor(Math.random() * movers.length)];
       effects[mi](evt);
       return;
     }
 
-    chosen(evt);
+    const idx = Math.floor(Math.random() * effects.length);
+    effects[idx](evt);
   }
 
-  // Prevent NO from being actually "clicked" into NO state; it always trolls
   function onNoInteract(evt) {
     evt.preventDefault();
     evt.stopPropagation();
     runRandomNoEffect(evt);
   }
 
-  // Desktop hover + click
+  // Attach NO handlers
   noBtn.addEventListener("mouseenter", onNoInteract, { passive: false });
   noBtn.addEventListener("click", onNoInteract, { passive: false });
-
-  // Mobile touch
   noBtn.addEventListener("touchstart", onNoInteract, { passive: false });
 
-  // Initial NO placement: slightly right side inside btnArea
+  // Initial NO placement
   function initialNoPlacement() {
     const area = getAreaRect();
     const start = { x: area.left + area.width * 0.72, y: area.top + area.height * 0.56 };
     setNoPositionWithinArea(start.x, start.y);
   }
 
-  window.addEventListener("resize", () => {
-    if (!isCelebrating) initialNoPlacement();
-    resizeCanvas();
-  });
+  // ===== Music: Fade-in + Mute =====
+  let fadeTimer = null;
+
+  function fadeInAudio(audioEl, targetVolume = 0.6, durationMs = 1800) {
+    if (!audioEl) return;
+
+    if (fadeTimer) {
+      clearInterval(fadeTimer);
+      fadeTimer = null;
+    }
+
+    audioEl.volume = 0;
+    const steps = 30;
+    const stepTime = Math.max(30, Math.floor(durationMs / steps));
+    const delta = targetVolume / steps;
+    let v = 0;
+
+    fadeTimer = setInterval(() => {
+      v = Math.min(targetVolume, v + delta);
+      audioEl.volume = v;
+
+      if (v >= targetVolume) {
+        clearInterval(fadeTimer);
+        fadeTimer = null;
+      }
+    }, stepTime);
+  }
+
+  function updateMuteUI() {
+    if (!muteBtn || !bgMusic) return;
+    const isMuted = bgMusic.muted;
+    muteBtn.setAttribute("aria-pressed", String(isMuted));
+    muteBtn.textContent = isMuted ? "🔇 Sound: OFF" : "🔊 Sound: ON";
+  }
+
+  if (muteBtn && bgMusic) {
+    muteBtn.addEventListener("click", () => {
+      bgMusic.muted = !bgMusic.muted;
+
+      // If turning ON, ensure it's playing and bring volume back nicely
+      if (!bgMusic.muted) {
+        bgMusic.play()
+          .then(() => {
+            if (bgMusic.volume === 0) fadeInAudio(bgMusic, 0.6, 1200);
+          })
+          .catch(() => {});
+      }
+
+      updateMuteUI();
+    });
+
+    updateMuteUI();
+  }
 
   // ===== YES Behavior =====
   yesBtn.addEventListener("click", () => {
-  if (isCelebrating) return;
-  isCelebrating = true;
+    if (isCelebrating) return;
+    isCelebrating = true;
 
-  document.getElementById("mainScreen").classList.add("hidden");
-  yesScreen.classList.remove("hidden");
+    mainScreen.classList.add("hidden");
+    yesScreen.classList.remove("hidden");
 
-  // 🔊 PLAY MUSIC AFTER YES CLICK
-  if (bgMusic) {
-    bgMusic.volume = 0.6;   // atur volume (0.0 - 1.0)
-    bgMusic.play().catch(() => {
-      console.log("Autoplay blocked");
-    });
+    // Start music on user interaction (YES click) + fade-in
+    if (bgMusic) {
+      bgMusic.muted = false;
+      bgMusic.currentTime = 0;
+      bgMusic.volume = 0;
+
+      bgMusic.play()
+        .then(() => fadeInAudio(bgMusic, 0.6, 1800))
+        .catch(() => console.log("Audio play blocked"));
+    }
+    updateMuteUI();
+
+    applyImageFallbacks();
+    startFireworks();
+    spawnHeartsFor(4500);
+  });
+
+  // ===== Buttons on YES screen =====
+  if (againBtn) {
+    againBtn.addEventListener("click", () => resetAll());
   }
 
-  applyImageFallbacks();
-  startFireworks();
-  spawnHeartsFor(4500);
-});
-
-  againBtn.addEventListener("click", () => resetAll());
-  claimBtn.addEventListener("click", () => {
-    // playful: quick bubble at center
-    const msg = "Screenshot time 📸 (and DM your manager for the Corkcicle 😄)";
-    quickCenterToast(msg);
-  });
+  if (claimBtn) {
+    claimBtn.addEventListener("click", () => {
+      const msg = "Screenshot time 📸 (and DM your manager (Bowo) for the Corkcicle 😄)";
+      quickCenterToast(msg);
+    });
+  }
 
   function resetAll() {
     stopFireworks();
@@ -390,11 +414,23 @@
     noCountEl.textContent = "0";
 
     yesScreen.classList.add("hidden");
-    document.getElementById("mainScreen").classList.remove("hidden");
+    mainScreen.classList.remove("hidden");
 
-    // reset NO label and styles
     noBtn.textContent = "NO ❌";
     noBtn.classList.remove("fade-gray", "shrink", "wiggle");
+
+    // stop music on reset
+    if (bgMusic) {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+      bgMusic.volume = 0;
+      bgMusic.muted = false;
+    }
+    if (fadeTimer) {
+      clearInterval(fadeTimer);
+      fadeTimer = null;
+    }
+    updateMuteUI();
 
     initialNoPlacement();
   }
@@ -482,7 +518,6 @@
   let lastBurst = 0;
 
   function resizeCanvas() {
-    // handle high DPI
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     fxCanvas.width = Math.floor(window.innerWidth * dpr);
     fxCanvas.height = Math.floor(window.innerHeight * dpr);
@@ -519,7 +554,6 @@
         life: 60 + Math.random() * 30,
         age: 0,
         size: 1.2 + Math.random() * 1.8,
-        // Use random hue, but don't hardcode CSS colors in CSS; canvas is fine.
         hue: Math.floor(Math.random() * 360),
       });
     }
@@ -528,11 +562,9 @@
   function tick() {
     rafId = requestAnimationFrame(tick);
 
-    // fade background a bit for trails
     ctx.fillStyle = "rgba(255,255,255,0.14)";
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    // periodic bursts
     const now = performance.now();
     if (now - lastBurst > 420) {
       lastBurst = now;
@@ -541,7 +573,6 @@
       burst(x, y);
     }
 
-    // update particles
     const gravity = 0.035;
     particles = particles.filter(p => p.age < p.life);
 
@@ -564,4 +595,9 @@
   // ===== Init =====
   initialNoPlacement();
   resizeCanvas();
+
+  window.addEventListener("resize", () => {
+    if (!isCelebrating) initialNoPlacement();
+    resizeCanvas();
+  });
 })();
