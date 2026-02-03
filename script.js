@@ -8,6 +8,7 @@
 
 (() => {
   // ===== DOM =====
+  const farewellCard = document.getElementById("farewellCard");
   const mainScreen = document.getElementById("mainScreen");
   const yesScreen = document.getElementById("yesScreen");
   const yesBtn = document.getElementById("yesBtn");
@@ -606,4 +607,9 @@
     if (!isCelebrating) initialNoPlacement();
     resizeCanvas();
   });
+  if (farewellCard) {
+  farewellCard.addEventListener("click", () => {
+    farewellCard.classList.toggle("flipped");
+  });
+}
 })();
