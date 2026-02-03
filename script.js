@@ -457,17 +457,23 @@
 
   // ===== Small toast =====
   function quickCenterToast(text) {
-    const toast = document.createElement("div");
-    toast.className = "bubble";
-    toast.textContent = text;
-    toast.style.left = "50%";
-    toast.style.top = "55%";
-    toast.style.transform = "translate(-50%, -50%)";
-    toast.style.maxWidth = "min(340px, 86vw)";
-    toast.style.textAlign = "center";
-    bubbleLayer.appendChild(toast);
-    setTimeout(() => toast.remove(), 950);
-  }
+  const toast = document.createElement("div");
+  toast.className = "bubble";
+  toast.textContent = text;
+
+  // Make it visible on ANY screen (main/yes)
+  toast.style.position = "fixed";
+  toast.style.left = "50%";
+  toast.style.top = "62%";
+  toast.style.transform = "translate(-50%, -50%)";
+  toast.style.maxWidth = "min(360px, 88vw)";
+  toast.style.textAlign = "center";
+  toast.style.zIndex = "9999";
+
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 950);
+}
+
 
   // ===== Falling hearts =====
   let heartTimers = [];
