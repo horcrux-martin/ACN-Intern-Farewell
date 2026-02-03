@@ -13,6 +13,8 @@
   const againBtn = document.getElementById("againBtn");
   const claimBtn = document.getElementById("claimBtn");
 
+  const bgMusic = document.getElementById("bgMusic");
+  
   const btnArea = document.getElementById("btnArea");
   const bubbleLayer = document.getElementById("bubbleLayer");
   const floatLayer = document.getElementById("floatLayer");
@@ -353,20 +355,24 @@
 
   // ===== YES Behavior =====
   yesBtn.addEventListener("click", () => {
-    if (isCelebrating) return;
-    isCelebrating = true;
+  if (isCelebrating) return;
+  isCelebrating = true;
 
-    // Switch screens
-    document.getElementById("mainScreen").classList.add("hidden");
-    yesScreen.classList.remove("hidden");
+  document.getElementById("mainScreen").classList.add("hidden");
+  yesScreen.classList.remove("hidden");
 
-    // Prepare image fallbacks
-    applyImageFallbacks();
+  // 🔊 PLAY MUSIC AFTER YES CLICK
+  if (bgMusic) {
+    bgMusic.volume = 0.6;   // atur volume (0.0 - 1.0)
+    bgMusic.play().catch(() => {
+      console.log("Autoplay blocked");
+    });
+  }
 
-    // Start celebration FX
-    startFireworks();
-    spawnHeartsFor(4500);
-  });
+  applyImageFallbacks();
+  startFireworks();
+  spawnHeartsFor(4500);
+});
 
   againBtn.addEventListener("click", () => resetAll());
   claimBtn.addEventListener("click", () => {
