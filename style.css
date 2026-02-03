@@ -366,3 +366,11 @@ body{
   .person{ max-width:100%; }
   .person img{ padding:10px; }
 }
+
+.mute-btn{
+  margin: 10px auto 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
