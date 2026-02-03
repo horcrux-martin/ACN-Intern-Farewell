@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SECE Intern Fun Check</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient emoji decorations -->
+  <div class="bg-emojis" aria-hidden="true">
+    <span>💼</span><span>✨</span><span>😈</span><span>☕</span><span>📎</span><span>💙</span><span>👻</span><span>🚀</span>
+  </div>
+
+  <!-- Fireworks canvas (used on YES screen) -->
+  <canvas id="fxCanvas" aria-hidden="true"></canvas>
+
+  <main class="wrap">
+    <!-- MAIN SCREEN -->
+    <section id="mainScreen" class="card" role="region" aria-label="Survey">
+      <div class="badge" aria-hidden="true">Project SECE vibes</div>
+
+      <h1 class="title">
+        Was your internship at Accenture — especially Project SECE with Ikul, Wawei, and Devi — fun?
+      </h1>
+      <p class="subtitle">Be honest 😈</p>
+
+      <div class="stats" aria-live="polite">
+        <span class="stat-pill">NO attempts: <strong id="noCount">0</strong></span>
+      </div>
+
+      <div class="btn-area" id="btnArea">
+        <button id="yesBtn" class="btn btn-yes" type="button">
+          YES ✅
+        </button>
+
+        <!-- NO button will be positioned/animated by JS -->
+        <button id="noBtn" class="btn btn-no" type="button">
+          NO ❌
+        </button>
+      </div>
+
+      <p class="hint">
+        Tip: try to click <strong>NO</strong> on mobile 😏
+      </p>
+
+      <!-- Speech bubble container (created dynamically too, but keeping region helps) -->
+      <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
+      <div id="floatLayer" class="float-layer" aria-hidden="true"></div>
+    </section>
+
+    <!-- SUCCESS / YES SCREEN -->
+    <section id="yesScreen" class="card success hidden" role="region" aria-label="Success">
+      <div class="badge badge-success" aria-hidden="true">Verified: had fun</div>
+
+      <h2 class="title success-title">CONGRATS!! 🎉</h2>
+      <p class="subtitle success-subtitle">You win a Corkcicle 🥤</p>
+      <p class="subtitle success-subtitle">Soon-to-be successful person 🚀</p>
+
+      <div class="photo-grid" aria-label="Alumni photos">
+        <figure class="person">
+          <img src="assets/ikul.jpg" alt="Ikul photo" data-fallback="Ikul" />
+          <figcaption>Ikul</figcaption>
+        </figure>
+
+        <figure class="person">
+          <img src="assets/wawei.jpg" alt="Wawei photo" data-fallback="Wawei" />
+          <figcaption>Wawei</figcaption>
+        </figure>
+
+        <figure class="person">
+          <img src="assets/devi.jpg" alt="Devi photo" data-fallback="Devi" />
+          <figcaption>Devi</figcaption>
+        </figure>
+      </div>
+
+      <div class="cta-row">
+        <button id="againBtn" class="btn btn-soft" type="button">Play again 🔁</button>
+        <button id="claimBtn" class="btn btn-soft" type="button">Screenshot & claim 😄</button>
+      </div>
+
+      <p class="smallprint">
+        (Replace the images in <code>/assets</code> with real photos. This is just for fun.)
+      </p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
