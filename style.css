@@ -182,7 +182,7 @@ body{
   border-radius:14px;
   box-shadow: 0 14px 40px rgba(15,23,42,.12);
   transform: translate(-50%, -110%);
-  animation: bubblePop .9s ease forwards;
+  animation: bubblePop 1.6s ease forwards;
 }
 
 .bubble::after{
@@ -198,7 +198,8 @@ body{
 
 @keyframes bubblePop{
   0%{ opacity:0; transform: translate(-50%, -90%) scale(.94); }
-  18%{ opacity:1; transform: translate(-50%, -112%) scale(1.02); }
+  12%{ opacity:1; transform: translate(-50%, -112%) scale(1.02); }
+  75%{ opacity:1; transform: translate(-50%, -112%) scale(1.0); }
   100%{ opacity:0; transform: translate(-50%, -130%) scale(.98); }
 }
 
