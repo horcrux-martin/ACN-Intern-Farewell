@@ -118,7 +118,7 @@
     bubble.style.top = `${localY}px`;
 
     bubbleLayer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 950);
+    setTimeout(() => bubble.remove(), 1600);
   }
 
   function spawnGhost() {
@@ -140,10 +140,10 @@
   }
 
   function tempSwapNoLabel() {
-    const labels = ["NO?", "really?", "don't do it", "NO pls", "u sure?"];
+    const labels = ["NO?", "Seriusan?", "WOY klik YES", "Ga Cair Ya Gaji", "u sure?"];
     const original = noBtn.textContent;
     noBtn.textContent = labels[Math.floor(Math.random() * labels.length)];
-    setTimeout(() => { noBtn.textContent = original; }, 900);
+    setTimeout(() => { noBtn.textContent = original; }, 1600);
   }
 
   function tempFadeGray() {
