@@ -448,6 +448,107 @@ body{
   margin-bottom:18px;
 }
 
+/* ===== Gift Button (Yellow) ===== */
+.gift-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin: 8px auto 10px;
+  padding: 12px 16px;
+  font-weight: 900;
+  font-size: 16px;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #1f2937;
+  background: linear-gradient(180deg, #fde047, #f59e0b);
+  box-shadow: 0 14px 28px rgba(15,23,42,.18);
+  transition: transform .12s ease, filter .12s ease;
+}
+.gift-btn:hover{ filter: brightness(1.03); }
+.gift-btn:active{ transform: translateY(1px) scale(.98); }
+
+/* ===== Modal ===== */
+.modal{
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 99999;
+  padding: 16px;
+}
+
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(2,6,23,.55);
+  backdrop-filter: blur(2px);
+}
+
+.modal-card{
+  position: relative;
+  width: min(420px, 92vw);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 28px 80px rgba(0,0,0,.25);
+  padding: 18px;
+  z-index: 1;
+  animation: popIn .18s ease-out;
+}
+
+@keyframes popIn{
+  from{ transform: translateY(8px) scale(.98); opacity:.6; }
+  to{ transform: translateY(0) scale(1); opacity:1; }
+}
+
+.modal-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:36px;
+  height:36px;
+  border-radius: 12px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.modal-title{
+  margin: 6px 0 10px;
+  text-align:center;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.modal-body{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 10px;
+}
+
+.cork-img{
+  width: min(280px, 70vw);
+  height: auto;
+  object-fit: contain;
+}
+
+.modal-text{
+  margin: 0;
+  text-align:center;
+  color: #475569;
+  font-size: 14px;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:center;
+  margin-top: 12px;
+}
+
+
 .signature{
   font-size:14px;
   color:#444;
