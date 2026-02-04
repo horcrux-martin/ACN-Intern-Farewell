@@ -15,6 +15,12 @@
   const noBtn = document.getElementById("noBtn");
   const againBtn = document.getElementById("againBtn");
   const claimBtn = document.getElementById("claimBtn");
+  const giftBtn = document.getElementById("giftBtn");
+  const giftModal = document.getElementById("giftModal");
+  const giftCloseBtn = document.getElementById("giftCloseBtn");
+  const giftOkBtn = document.getElementById("giftOkBtn");
+  const corkImg = document.getElementById("corkImg");
+
 
   const bgMusic = document.getElementById("bgMusic");
   const muteBtn = document.getElementById("muteBtn");
@@ -612,4 +618,42 @@
     farewellCard.classList.toggle("flipped");
   });
 }
+  function openGiftModal() {
+  if (!giftModal) return;
+  giftModal.classList.remove("hidden");
+}
+
+function closeGiftModal() {
+  if (!giftModal) return;
+  giftModal.classList.add("hidden");
+}
+
+// fallback if corkcicle image missing
+if (corkImg) {
+  corkImg.onerror = () => {
+    corkImg.replaceWith(Object.assign(document.createElement("div"), {
+      className: "fallback-card",
+      textContent: "🥤 Corkcicle"
+    }));
+  };
+}
+
+// button events
+if (giftBtn) giftBtn.addEventListener("click", openGiftModal);
+if (giftCloseBtn) giftCloseBtn.addEventListener("click", closeGiftModal);
+if (giftOkBtn) giftOkBtn.addEventListener("click", closeGiftModal);
+
+// close on backdrop click
+document.addEventListener("click", (e) => {
+  const t = e.target;
+  if (t && t.getAttribute && t.getAttribute("data-close") === "true") {
+    closeGiftModal();
+  }
+});
+
+// close on ESC
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeGiftModal();
+});
+
 })();
